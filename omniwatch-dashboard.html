@@ -1,0 +1,2113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OMNIWATCH V5 — Teacher Screen Monitoring Dashboard</title>
+  <meta name="description" content="OMNIWATCH V5 real-time teacher screen monitoring dashboard with live feeds from 50+ classrooms." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%23ec4899'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='12' cy='12' r='10' fill='url(%23g)'/%3E%3Ccircle cx='12' cy='12' r='4' fill='%23fff' opacity='.9'/%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ══════════════════════════════════════════════════════════════════════
+       OMNIWATCH V5 — DESIGN SYSTEM
+       ══════════════════════════════════════════════════════════════════════ */
+    :root {
+      --bg-primary: #06080e;
+      --bg-secondary: #0b0f1a;
+      --bg-tertiary: #0f1422;
+      --bg-elevated: #131929;
+      --bg-hover: #181f33;
+      --bg-input: #0d1220;
+      --border-subtle: rgba(255,255,255,0.05);
+      --border-default: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.12);
+      --text-primary: #edf0f7;
+      --text-secondary: #8896b3;
+      --text-muted: #4e5c78;
+      --text-dim: #2d3750;
+      --accent-primary: #6366f1;
+      --accent-hover: #5558e6;
+      --accent-glow: rgba(99,102,241,0.25);
+      --emerald: #10b981;
+      --emerald-bg: rgba(16,185,129,0.1);
+      --emerald-border: rgba(16,185,129,0.2);
+      --rose: #f43f5e;
+      --rose-bg: rgba(244,63,94,0.1);
+      --rose-border: rgba(244,63,94,0.2);
+      --amber: #f59e0b;
+      --amber-bg: rgba(245,158,11,0.1);
+      --amber-border: rgba(245,158,11,0.2);
+      --cyan: #06b6d4;
+      --violet: #8b5cf6;
+      --glass: rgba(11,15,26,0.85);
+      --glass-border: rgba(255,255,255,0.06);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+      --shadow-glow-accent: 0 0 20px rgba(99,102,241,0.2);
+      --shadow-glow-rose: 0 0 20px rgba(244,63,94,0.2);
+      --shadow-glow-emerald: 0 0 15px rgba(16,185,129,0.2);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --transition-fast: 0.12s ease;
+      --transition-base: 0.2s ease;
+      --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --grid-gap: 5px;
+      --sidebar-width: 240px;
+      --topbar-height: 48px;
+      --statusbar-height: 32px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      color: var(--text-primary);
+      overflow: hidden;
+      line-height: 1.5;
+    }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       ANIMATIONS
+       ══════════════════════════════════════════════════════════════════════ */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInScale { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideInRight { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    @keyframes glow { 0%, 100% { box-shadow: 0 0 4px rgba(244,63,94,0.3); } 50% { box-shadow: 0 0 18px rgba(244,63,94,0.6); } }
+    @keyframes scanline { 0% { top: -2px; } 100% { top: 100%; } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes idleBorder { 0%, 100% { border-color: rgba(245,158,11,0.3); } 50% { border-color: rgba(245,158,11,0.7); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       LAYOUT
+       ══════════════════════════════════════════════════════════════════════ */
+    #app {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      grid-template-rows: var(--topbar-height) 1fr var(--statusbar-height);
+      height: 100vh;
+      gap: 0;
+    }
+
+    #app.fullscreen-mode {
+      grid-template-columns: 1fr;
+    }
+    #app.fullscreen-mode .sidebar { display: none; }
+    #app.fullscreen-mode .status-bar { grid-column: 1; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       SIDEBAR
+       ══════════════════════════════════════════════════════════════════════ */
+    .sidebar {
+      grid-row: 1 / 4;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 16px 16px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      box-shadow: 0 0 16px rgba(99,102,241,0.3);
+    }
+
+    .brand-icon::after {
+      content: '';
+      width: 10px; height: 10px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
+    }
+
+    .brand-text h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .brand-text .version-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--accent-primary);
+      background: var(--accent-glow);
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* Stats Summary */
+    .sidebar-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 8px 4px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    .stat-card .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .stat-card .stat-label {
+      font-size: 8px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .stat-card.emerald .stat-value { color: var(--emerald); }
+    .stat-card.amber .stat-value { color: var(--amber); }
+    .stat-card.rose .stat-value { color: var(--rose); }
+
+    /* Sidebar Controls */
+    .sidebar-section {
+      padding: 10px 12px 6px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section-title {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .sidebar-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      margin-bottom: 4px;
+      transition: all var(--transition-fast);
+      background: transparent;
+      color: var(--text-secondary);
+    }
+
+    .sidebar-btn:hover { background: var(--bg-hover); color: var(--text-primary); transform: translateX(2px); }
+    .sidebar-btn:active { transform: translateX(0); }
+    .sidebar-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    .sidebar-btn.primary { background: var(--accent-primary); color: #fff; border-color: var(--accent-hover); }
+    .sidebar-btn.primary:hover { background: var(--accent-hover); box-shadow: var(--shadow-glow-accent); }
+    .sidebar-btn.danger { background: var(--rose-bg); color: var(--rose); border-color: var(--rose-border); }
+    .sidebar-btn.success { background: var(--emerald-bg); color: var(--emerald); border-color: var(--emerald-border); }
+    .sidebar-btn.warn { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+
+    /* Alert Panel */
+    .alert-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+    }
+
+    .alert-item {
+      padding: 8px 10px;
+      background: var(--rose-bg);
+      border: 1px solid var(--rose-border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 4px;
+      animation: slideInRight 0.3s ease;
+    }
+
+    .alert-item.warn-alert {
+      background: var(--amber-bg);
+      border-color: var(--amber-border);
+    }
+
+    .alert-title {
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--rose);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .warn-alert .alert-title { color: var(--amber); }
+
+    .alert-title .alert-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 1.5s infinite;
+    }
+
+    .alert-body {
+      font-size: 11px;
+      color: var(--text-primary);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .alert-meta {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Privacy Badge */
+    .privacy-badge {
+      margin: 8px 12px 12px;
+      padding: 10px 12px;
+      background: var(--emerald-bg);
+      border: 1px solid var(--emerald-border);
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+
+    .privacy-badge .pb-title {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--emerald);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .privacy-badge .pb-sub {
+      font-size: 8px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       TOPBAR
+       ══════════════════════════════════════════════════════════════════════ */
+    .topbar {
+      grid-column: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .feed-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .feed-counter .count-value { color: var(--emerald); }
+
+    /* Search */
+    .search-container {
+      flex: 1;
+      max-width: 320px;
+      position: relative;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 6px 12px 6px 32px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 11px;
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    .search-container input::placeholder { color: var(--text-muted); }
+    .search-container input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .search-container .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Topbar Right */
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* View Toggle */
+    .view-toggle {
+      display: flex;
+      gap: 2px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+    }
+
+    .view-toggle button {
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      background: transparent;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .view-toggle button.active {
+      background: var(--accent-primary);
+      color: #fff;
+      box-shadow: var(--shadow-glow-accent);
+    }
+
+    .view-toggle button:hover:not(.active) {
+      color: var(--text-secondary);
+      background: var(--bg-hover);
+    }
+
+    /* Connection Badge */
+    .conn-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 9px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .conn-badge.connected { background: var(--emerald-bg); color: var(--emerald); border: 1px solid var(--emerald-border); }
+    .conn-badge.disconnected { background: var(--rose-bg); color: var(--rose); border: 1px solid var(--rose-border); }
+    .conn-badge.connecting { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+
+    .conn-badge .cb-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .conn-badge.connected .cb-dot { animation: pulse 2s infinite; }
+    .conn-badge.connecting .cb-dot { animation: pulse 0.6s infinite; }
+
+    .topbar-btn {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .topbar-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .topbar-btn.active { background: var(--accent-primary); color: #fff; border-color: var(--accent-hover); }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       FEED GRID
+       ══════════════════════════════════════════════════════════════════════ */
+    .feed-grid-wrapper {
+      grid-column: 2;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 8px;
+    }
+
+    .feed-grid {
+      display: grid;
+      gap: var(--grid-gap);
+      align-content: start;
+      min-height: 100%;
+    }
+
+    .feed-grid.layout-auto { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+    .feed-grid.layout-10 { grid-template-columns: repeat(10, 1fr); }
+    .feed-grid.layout-6 { grid-template-columns: repeat(6, 1fr); }
+    .feed-grid.layout-4 { grid-template-columns: repeat(4, 1fr); }
+    .feed-grid.layout-2 { grid-template-columns: repeat(2, 1fr); }
+    .feed-grid.layout-1 { grid-template-columns: 1fr; max-width: 960px; margin: 0 auto; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       FEED TILE
+       ══════════════════════════════════════════════════════════════════════ */
+    .feed-tile {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base), opacity var(--transition-base);
+      aspect-ratio: 16 / 10;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .feed-tile:hover {
+      border-color: rgba(99,102,241,0.35);
+      box-shadow: var(--shadow-glow-accent);
+      transform: scale(1.015);
+      z-index: 2;
+    }
+
+    .feed-tile.status-active { border-color: rgba(99,102,241,0.15); }
+    .feed-tile.status-idle { border-color: rgba(245,158,11,0.4); animation: idleBorder 2.5s infinite; }
+    .feed-tile.status-disconnected { opacity: 0.4; border-color: var(--border-subtle); }
+    .feed-tile.status-disconnected:hover { opacity: 0.7; }
+
+    .feed-tile.selected {
+      border-color: var(--accent-primary) !important;
+      box-shadow: 0 0 0 2px var(--accent-glow), var(--shadow-glow-accent) !important;
+    }
+
+    /* Tile Screen Area */
+    .tile-screen {
+      width: 100%;
+      height: calc(100% - 24px);
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tile-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s ease;
+    }
+
+    .tile-screen .no-feed {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.06);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      user-select: none;
+    }
+
+    /* Scanline effect for active tiles */
+    .feed-tile.status-active .tile-screen::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,0.12), transparent);
+      animation: scanline 4s linear infinite;
+      pointer-events: none;
+    }
+
+    /* LIVE indicator */
+    .tile-live {
+      position: absolute;
+      top: 4px; left: 4px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      z-index: 3;
+    }
+
+    .tile-live .live-dot {
+      width: 5px; height: 5px;
+      background: var(--rose);
+      border-radius: 50%;
+      animation: blink 1s infinite;
+    }
+
+    .tile-live .live-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7px;
+      font-weight: 700;
+      color: var(--rose);
+      letter-spacing: 0.5px;
+    }
+
+    /* IDLE badge */
+    .tile-idle-badge {
+      position: absolute;
+      top: 4px; right: 4px;
+      background: var(--amber);
+      color: #000;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 0 8px rgba(245,158,11,0.5);
+      z-index: 3;
+    }
+
+    /* OFFLINE badge */
+    .tile-offline-badge {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      z-index: 3;
+    }
+
+    /* Active window overlay */
+    .tile-window-bar {
+      position: absolute;
+      bottom: 24px; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.9));
+      padding: 14px 6px 3px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7px;
+      color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      z-index: 2;
+    }
+
+    /* Tile Info Bar */
+    .tile-info {
+      height: 24px;
+      padding: 0 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-tertiary);
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .tile-info .tile-name {
+      font-size: 9px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tile-info .tile-room {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px;
+      color: var(--text-muted);
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-left: 6px;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       STATUS BAR
+       ══════════════════════════════════════════════════════════════════════ */
+    .status-bar {
+      grid-column: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    .status-left, .status-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .status-left .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-left .status-dot::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--emerald);
+      animation: pulse 2s infinite;
+    }
+
+    .status-right .active-count { color: var(--emerald); font-weight: 700; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       MODAL / EXPANDED VIEW
+       ══════════════════════════════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.15s ease;
+    }
+
+    .modal-overlay.hidden { display: none; }
+
+    .modal-panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      width: 92%;
+      max-width: 940px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: fadeInScale 0.2s ease;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .modal-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-header .modal-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .modal-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-close-btn {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-fast);
+    }
+
+    .modal-close-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+    .expanded-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 16px;
+    }
+
+    .ev-screen-container {
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .ev-screen-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .ev-screen-container .no-feed-large {
+      color: rgba(255,255,255,0.08);
+      font-size: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+    }
+
+    .ev-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .ev-actions .sidebar-btn { flex: 1; justify-content: center; }
+
+    .ev-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ev-info-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .ev-info-card .ev-label {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .ev-info-card .ev-value {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .ev-info-card .ev-value.emerald { color: var(--emerald); }
+    .ev-info-card .ev-value.rose { color: var(--rose); }
+    .ev-info-card .ev-value.amber { color: var(--amber); }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--border-default);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .progress-bar .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    /* Settings Modal */
+    .settings-panel {
+      max-width: 480px;
+    }
+
+    .settings-panel label {
+      display: block;
+      font-size: 10px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    .settings-panel input {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    .settings-panel input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .settings-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .settings-actions button {
+      flex: 1;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+    }
+
+    .settings-actions .btn-primary { background: var(--accent-primary); color: #fff; }
+    .settings-actions .btn-primary:hover { background: var(--accent-hover); }
+    .settings-actions .btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-default); }
+    .settings-actions .btn-secondary:hover { background: var(--bg-hover); }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       RESPONSIVE
+       ══════════════════════════════════════════════════════════════════════ */
+    @media (max-width: 960px) {
+      #app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .topbar, .status-bar, .feed-grid-wrapper { grid-column: 1; }
+      .feed-grid.layout-10 { grid-template-columns: repeat(5, 1fr); }
+      .expanded-layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .feed-grid.layout-10, .feed-grid.layout-6 { grid-template-columns: repeat(3, 1fr); }
+      .topbar-right .view-toggle { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    // ═══════════════════════════════════════════════════════════════════
+    // CONFIGURATION
+    // ═══════════════════════════════════════════════════════════════════
+    const CONFIG = {
+      serverUrl: localStorage.getItem('omniwatch_server') || ((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host),
+      dashToken: localStorage.getItem('omniwatch_token') || 'OMNIWATCH-DASH-2026',
+      reconnectDelay: 3000,
+      maxReconnectDelay: 30000,
+      idleThreshold: parseInt(localStorage.getItem('omniwatch_idle') || '30', 10),
+      totalRooms: 50,
+      roomStart: 100,
+      version: 'V5',
+      renderThrottleMs: 500,
+      maxAlerts: 25,
+    };
+
+    // ═══════════════════════════════════════════════════════════════════
+    // SVG ICONS
+    // ═══════════════════════════════════════════════════════════════════
+    const ICONS = {
+      monitor: '<path d="M20 3H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V5a2 2 0 00-2-2z"/><path d="M8 21h8M12 17v4"/>',
+      shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 01-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 011-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 011.52 0C14.51 3.81 17 5 19 5a1 1 0 011 1z"/>',
+      download: '<path d="M12 15V3"/><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="m7 10 5 5 5-5"/>',
+      camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+      fileText: '<path d="M15 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7z"/><path d="M14 2v4a2 2 0 002 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+      settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>',
+      lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>',
+      bell: '<path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/>',
+      maximize: '<path d="M8 3H5a2 2 0 00-2 2v3"/><path d="M21 8V5a2 2 0 00-2-2h-3"/><path d="M3 16v3a2 2 0 002 2h3"/><path d="M16 21h3a2 2 0 002-2v-3"/>',
+      x: '<path d="M18 6L6 18"/><path d="M6 6l12 12"/>',
+      wifi: '<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0120 0"/><path d="M5 12.859a10 10 0 0114 0"/><path d="M8.5 16.429a5 5 0 017 0"/>',
+      cpu: '<rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/>',
+      hardDrive: '<path d="M22 12H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/>',
+      search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+      keyboard: '<rect width="20" height="16" x="2" y="4" rx="2" ry="2"/><path d="M6 8h.001"/><path d="M10 8h.001"/><path d="M14 8h.001"/><path d="M18 8h.001"/><path d="M8 12h.001"/><path d="M12 12h.001"/><path d="M16 12h.001"/><path d="M7 16h10"/>',
+      refresh: '<path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"/><path d="M3 21v-5h5"/>',
+      zap: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',
+      eye: '<path d="M2.062 12.348a1 1 0 010-.696 10.75 10.75 0 0119.876 0 1 1 0 010 .696 10.75 10.75 0 01-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+    };
+
+    function icon(name, size) {
+      size = size || 14;
+      return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0">' + (ICONS[name] || '') + '</svg>';
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════════════════════════════
+    const state = {
+      ws: null,
+      connected: false,
+      connecting: false,
+      sessionId: null,
+      agents: new Map(),
+      alerts: [],
+      layout: localStorage.getItem('omniwatch_layout') || 'auto',
+      selectedAgent: null,
+      showSettings: false,
+      searchQuery: '',
+      reconnectAttempts: 0,
+      tps: 0,
+      latency: 0,
+      fullscreen: false,
+    };
+
+    // ═══════════════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════════════
+    function genSessionId() {
+      var num = String(Math.floor(Math.random() * 900) + 100);
+      var a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      return 'AUTH-' + num + '-' + a[Math.floor(Math.random() * 26)] + a[Math.floor(Math.random() * 26)];
+    }
+
+    function getInitials(name) {
+      if (!name) return '??';
+      var parts = name.trim().split(/\s+/);
+      if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function fmtDuration(sec) {
+      if (sec < 60) return Math.floor(sec) + 's';
+      var m = Math.floor(sec / 60);
+      var s = Math.floor(sec % 60);
+      if (m < 60) return m + 'm ' + s + 's';
+      return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+    }
+
+    function fmtTime(d) {
+      return d.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function truncStr(str, len) {
+      if (!str) return '';
+      return str.length > len ? str.substring(0, len) + '…' : str;
+    }
+
+    function escHtml(s) {
+      if (!s) return '';
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // WEBSOCKET
+    // ═══════════════════════════════════════════════════════════════════
+    var reconnectTimer = null;
+    var feedCounter = 0;
+    var lastFeedTime = 0;
+
+    function connectWS() {
+      if (state.ws && state.ws.readyState === WebSocket.OPEN) return;
+
+      state.connecting = true;
+      state.connected = false;
+      scheduleRender();
+
+      try {
+        var url = CONFIG.serverUrl + '/dashboard?token=' + encodeURIComponent(CONFIG.dashToken);
+        state.ws = new WebSocket(url);
+
+        state.ws.onopen = function() {
+          console.log('%c✓ OMNIWATCH V5 connected to relay server', 'color:#10b981;font-weight:bold');
+          state.connected = true;
+          state.connecting = false;
+          state.reconnectAttempts = 0;
+          state.sessionId = genSessionId();
+          scheduleRender();
+        };
+
+        state.ws.onmessage = function(event) {
+          try {
+            handleMessage(JSON.parse(event.data));
+          } catch (e) {
+            console.warn('Invalid message:', e);
+          }
+        };
+
+        state.ws.onclose = function() {
+          console.log('%c✗ WebSocket disconnected', 'color:#f43f5e;font-weight:bold');
+          state.connected = false;
+          state.connecting = false;
+          state.ws = null;
+          scheduleRender();
+          scheduleReconnect();
+        };
+
+        state.ws.onerror = function() {
+          state.connected = false;
+          state.connecting = false;
+        };
+
+      } catch (e) {
+        console.error('WebSocket error:', e);
+        state.connecting = false;
+        scheduleReconnect();
+      }
+    }
+
+    function scheduleReconnect() {
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      state.reconnectAttempts++;
+      var delay = Math.min(
+        CONFIG.reconnectDelay * Math.pow(1.5, state.reconnectAttempts - 1),
+        CONFIG.maxReconnectDelay
+      );
+      reconnectTimer = setTimeout(connectWS, delay);
+    }
+
+    function handleMessage(msg) {
+      switch (msg.type) {
+        case 'auth_ok':
+          if (msg.sessionId) state.sessionId = msg.sessionId;
+          break;
+
+        case 'initial_sync':
+          if (msg.agents && Array.isArray(msg.agents)) {
+            msg.agents.forEach(function(a) {
+              if (a.agentId) {
+                a.lastUpdate = Date.now();
+                state.agents.set(a.agentId, a);
+              }
+            });
+          }
+          scheduleRender();
+          break;
+
+        case 'agent_update':
+        case 'agent_feed':
+          updateAgent(msg);
+          break;
+
+        case 'agent_status':
+          if (msg.agentId) {
+            var existing = state.agents.get(msg.agentId);
+            if (existing) {
+              existing.status = msg.status || existing.status;
+              existing.teacherName = msg.teacherName || existing.teacherName;
+              existing.roomNumber = msg.roomNumber || existing.roomNumber;
+              if (msg.status === 'disconnected') {
+                existing.screenshot = null;
+              }
+            } else {
+              state.agents.set(msg.agentId, {
+                agentId: msg.agentId,
+                teacherName: msg.teacherName || 'Unknown',
+                roomNumber: msg.roomNumber || 0,
+                status: msg.status || 'disconnected',
+                lastUpdate: Date.now(),
+              });
+            }
+          }
+          scheduleRender();
+          break;
+
+        case 'command_ack':
+          break;
+
+        case 'heartbeat_ack':
+        case 'pong':
+          if (msg.serverTime) {
+            state.latency = Date.now() - msg.serverTime;
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    function updateAgent(msg) {
+      var now = Date.now();
+      feedCounter++;
+      if (now - lastFeedTime >= 1000) {
+        state.tps = feedCounter;
+        feedCounter = 0;
+        lastFeedTime = now;
+      }
+
+      var id = msg.agentId;
+      if (!id) return;
+
+      var prev = state.agents.get(id) || {};
+      var idleSec = msg.idleSeconds || 0;
+      var isIdle = idleSec >= CONFIG.idleThreshold;
+
+      var agent = {
+        agentId: id,
+        teacherName: msg.teacherName || prev.teacherName || 'Unknown',
+        roomNumber: msg.roomNumber || prev.roomNumber || parseInt(id.replace(/\D/g, '')) || 0,
+        timestamp: msg.timestamp || now,
+        screenshot: msg.screenshot || prev.screenshot || null,
+        idleSeconds: idleSec,
+        activeWindow: msg.activeWindow || '',
+        activeApp: msg.activeApp || '',
+        keyboardActive: msg.keyboardActive !== undefined ? msg.keyboardActive : true,
+        mouseActive: msg.mouseActive !== undefined ? msg.mouseActive : true,
+        cpuUsage: msg.cpuUsage || 0,
+        memoryUsage: msg.memoryUsage || 0,
+        status: msg.status || 'active',
+        isIdle: isIdle,
+        lastUpdate: now,
+      };
+
+      state.agents.set(id, agent);
+
+      // Generate idle alert
+      if (isIdle && !prev.isIdle) {
+        addAlert({
+          type: 'idle',
+          agentId: id,
+          teacherName: agent.teacherName,
+          roomNumber: agent.roomNumber,
+          idleSeconds: idleSec,
+          timestamp: now,
+        });
+      }
+
+      scheduleRender();
+    }
+
+    function addAlert(a) {
+      state.alerts.unshift({
+        id: Date.now() + Math.random(),
+        type: a.type || 'info',
+        agentId: a.agentId || '',
+        teacherName: a.teacherName || '',
+        roomNumber: a.roomNumber || '',
+        message: a.message || '',
+        idleSeconds: a.idleSeconds || 0,
+        timestamp: a.timestamp || Date.now(),
+      });
+      if (state.alerts.length > CONFIG.maxAlerts) {
+        state.alerts = state.alerts.slice(0, CONFIG.maxAlerts);
+      }
+    }
+
+    function sendCmd(agentId, action, data) {
+      if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+      var payload = { type: 'command', agentId: agentId, action: action };
+      if (data) Object.assign(payload, data);
+      state.ws.send(JSON.stringify(payload));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // STALE DETECTION
+    // ═══════════════════════════════════════════════════════════════════
+    setInterval(function() {
+      var now = Date.now();
+      var changed = false;
+      state.agents.forEach(function(agent) {
+        if (agent.status === 'active' && agent.lastUpdate && (now - agent.lastUpdate) > 60000) {
+          agent.status = 'disconnected';
+          agent.screenshot = null;
+          changed = true;
+        }
+      });
+      if (changed) scheduleRender();
+    }, 10000);
+
+    // Ping to measure latency
+    setInterval(function() {
+      if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+        try { state.ws.send(JSON.stringify({ type: 'ping', timestamp: Date.now() })); } catch(e) {}
+      }
+    }, 10000);
+
+    // ═══════════════════════════════════════════════════════════════════
+    // RENDER ENGINE — DOM Diffing (no innerHTML flicker)
+    // ═══════════════════════════════════════════════════════════════════
+    var renderPending = false;
+    var domBuilt = false;
+    var tileElements = new Map(); // agentId -> DOM element
+    var tileImages = new Map();   // agentId -> img element (persistent!)
+    var lastScreenshots = new Map(); // agentId -> last screenshot string
+
+    function scheduleRender() {
+      if (renderPending) return;
+      renderPending = true;
+      requestAnimationFrame(doRender);
+    }
+
+    // Build the full DOM structure once
+    function buildDOM() {
+      var app = document.getElementById('app');
+      app.innerHTML = '';
+
+      // Sidebar
+      var sidebar = document.createElement('div');
+      sidebar.className = 'sidebar';
+      sidebar.id = 'sidebar';
+      app.appendChild(sidebar);
+
+      // Topbar
+      var topbar = document.createElement('div');
+      topbar.className = 'topbar';
+      topbar.id = 'topbar';
+      app.appendChild(topbar);
+
+      // Feed grid wrapper
+      var gridWrapper = document.createElement('div');
+      gridWrapper.className = 'feed-grid-wrapper';
+      gridWrapper.id = 'gridWrapper';
+      var grid = document.createElement('div');
+      grid.className = 'feed-grid layout-' + state.layout;
+      grid.id = 'feedGrid';
+      gridWrapper.appendChild(grid);
+      app.appendChild(gridWrapper);
+
+      // Status bar
+      var statusBar = document.createElement('div');
+      statusBar.className = 'status-bar';
+      statusBar.id = 'statusBar';
+      app.appendChild(statusBar);
+
+      // Modal overlay (hidden by default)
+      var modalOverlay = document.createElement('div');
+      modalOverlay.className = 'modal-overlay hidden';
+      modalOverlay.id = 'modalOverlay';
+      modalOverlay.addEventListener('click', function(e) {
+        if (e.target === modalOverlay) closeModal();
+      });
+      document.body.appendChild(modalOverlay);
+
+      domBuilt = true;
+    }
+
+    function doRender() {
+      renderPending = false;
+
+      if (!domBuilt) buildDOM();
+
+      var allAgents = Array.from(state.agents.values());
+      var activeAgents = allAgents.filter(function(a) { return a.status === 'active'; });
+      var idleAgents = activeAgents.filter(function(a) { return a.isIdle; });
+      var disconnectedAgents = allAgents.filter(function(a) { return a.status === 'disconnected'; });
+
+      // Update sidebar
+      updateSidebar(activeAgents.length, idleAgents.length, disconnectedAgents.length);
+
+      // Update topbar
+      updateTopbar(activeAgents.length, allAgents.length);
+
+      // Update grid
+      updateGrid(allAgents);
+
+      // Update status bar
+      updateStatusBar(activeAgents.length, allAgents.length);
+
+      // Update modal if open
+      if (state.selectedAgent) {
+        updateExpandedView();
+      }
+
+      // Apply fullscreen
+      var app = document.getElementById('app');
+      if (state.fullscreen) {
+        app.classList.add('fullscreen-mode');
+      } else {
+        app.classList.remove('fullscreen-mode');
+      }
+    }
+
+    // ── SIDEBAR ──────────────────────────────────────────────────────
+    function updateSidebar(active, idle, offline) {
+      var el = document.getElementById('sidebar');
+      el.innerHTML = '<div class="sidebar-header">'
+        + '<div class="sidebar-brand">'
+        + '<div class="brand-icon"></div>'
+        + '<div class="brand-text"><h1>OMNIWATCH <span class="version-tag">' + CONFIG.version + '</span></h1></div>'
+        + '</div>'
+        + '<div class="brand-subtitle">Teacher Screen Monitoring</div>'
+        + '</div>'
+
+        + '<div class="sidebar-stats">'
+        + '<div class="stat-card emerald"><div class="stat-value">' + active + '</div><div class="stat-label">Active</div></div>'
+        + '<div class="stat-card amber"><div class="stat-value">' + idle + '</div><div class="stat-label">Idle</div></div>'
+        + '<div class="stat-card rose"><div class="stat-value">' + offline + '</div><div class="stat-label">Offline</div></div>'
+        + '</div>'
+
+        + '<div class="sidebar-section">'
+        + '<div class="sidebar-section-title">Controls</div>'
+        + '<button class="sidebar-btn primary" id="btnCapture">' + icon('camera', 13) + ' Capture All Screens</button>'
+        + '<button class="sidebar-btn success" id="btnRefresh">' + icon('refresh', 13) + ' Refresh All Feeds</button>'
+        + '<button class="sidebar-btn warn" id="btnExport">' + icon('fileText', 13) + ' Export Activity Log</button>'
+        + '<button class="sidebar-btn" id="btnFullscreen">' + icon('maximize', 13) + ' Toggle Fullscreen</button>'
+        + '</div>'
+
+        + '<div class="sidebar-section">'
+        + '<div class="sidebar-section-title">Recent Alerts</div>'
+        + '</div>'
+
+        + '<div class="alert-panel" id="alertPanel">'
+        + (state.alerts.length === 0
+          ? '<div style="text-align:center;color:var(--text-muted);font-size:10px;padding:20px 0">No alerts yet</div>'
+          : state.alerts.slice(0, 10).map(function(a) {
+              var isWarn = a.type === 'idle';
+              var cls = isWarn ? 'warn-alert' : '';
+              if (a.type === 'idle') {
+                return '<div class="alert-item ' + cls + '">'
+                  + '<div class="alert-title"><span class="alert-dot"></span>IDLE: KEYBOARD INACTIVE</div>'
+                  + '<div class="alert-body">Room ' + a.roomNumber + ' — ' + escHtml(a.teacherName) + '</div>'
+                  + '<div class="alert-meta">Duration: ' + fmtDuration(a.idleSeconds) + '</div>'
+                  + '</div>';
+              }
+              return '<div class="alert-item ' + cls + '">'
+                + '<div class="alert-title"><span class="alert-dot"></span>' + (a.type || 'INFO').toUpperCase() + '</div>'
+                + '<div class="alert-body">' + escHtml(a.message || a.teacherName) + '</div>'
+                + '<div class="alert-meta">' + fmtDuration((Date.now() - a.timestamp) / 1000) + ' ago</div>'
+                + '</div>';
+            }).join(''))
+        + '</div>'
+
+        + '<div class="privacy-badge">'
+        + '<div class="pb-title">' + icon('shield', 12) + ' MONITORING ACTIVE</div>'
+        + '<div class="pb-sub">WebSocket relay · Encrypted transport</div>'
+        + '</div>';
+
+      // Re-attach event listeners
+      var btnCapture = document.getElementById('btnCapture');
+      if (btnCapture) btnCapture.onclick = function() {
+        if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+          state.ws.send(JSON.stringify({ type: 'request_all_screenshots' }));
+          addAlert({ type: 'info', message: 'Capture requested from all agents' });
+          scheduleRender();
+        }
+      };
+
+      var btnRefresh = document.getElementById('btnRefresh');
+      if (btnRefresh) btnRefresh.onclick = function() {
+        if (state.ws) {
+          state.ws.close();
+          state.ws = null;
+        }
+        state.reconnectAttempts = 0;
+        connectWS();
+      };
+
+      var btnExport = document.getElementById('btnExport');
+      if (btnExport) btnExport.onclick = exportLogs;
+
+      var btnFullscreen = document.getElementById('btnFullscreen');
+      if (btnFullscreen) btnFullscreen.onclick = function() {
+        state.fullscreen = !state.fullscreen;
+        scheduleRender();
+      };
+    }
+
+    // ── TOPBAR ────────────────────────────────────────────────────────
+    function updateTopbar(active, total) {
+      var el = document.getElementById('topbar');
+      var connClass = state.connected ? 'connected' : state.connecting ? 'connecting' : 'disconnected';
+      var connLabel = state.connected ? 'LIVE' : state.connecting ? 'CONNECTING' : 'OFFLINE';
+
+      el.innerHTML = '<div class="topbar-left">'
+        + '<div class="feed-counter">FEEDS: <span class="count-value">' + active + '</span>/' + total + '</div>'
+        + '</div>'
+
+        + '<div class="search-container">'
+        + '<span class="search-icon">' + icon('search', 13) + '</span>'
+        + '<input type="text" id="searchInput" placeholder="Search teacher, room, or app..." value="' + escHtml(state.searchQuery) + '" />'
+        + '</div>'
+
+        + '<div class="topbar-right">'
+        + '<div class="view-toggle">'
+        + '<button data-layout="auto" class="' + (state.layout === 'auto' ? 'active' : '') + '">Auto</button>'
+        + '<button data-layout="10" class="' + (state.layout === '10' ? 'active' : '') + '">10×</button>'
+        + '<button data-layout="6" class="' + (state.layout === '6' ? 'active' : '') + '">6×</button>'
+        + '<button data-layout="4" class="' + (state.layout === '4' ? 'active' : '') + '">4×</button>'
+        + '<button data-layout="2" class="' + (state.layout === '2' ? 'active' : '') + '">2×</button>'
+        + '<button data-layout="1" class="' + (state.layout === '1' ? 'active' : '') + '">1×</button>'
+        + '</div>'
+        + '<span class="conn-badge ' + connClass + '" id="connBadge"><span class="cb-dot"></span>' + connLabel + '</span>'
+        + '<button class="topbar-btn" id="btnSettings" title="Settings">' + icon('settings', 15) + '</button>'
+        + '</div>';
+
+      // Event listeners
+      var searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.oninput = function(e) {
+          state.searchQuery = e.target.value;
+          scheduleRender();
+        };
+      }
+
+      var viewBtns = el.querySelectorAll('.view-toggle button');
+      viewBtns.forEach(function(btn) {
+        btn.onclick = function() {
+          state.layout = btn.dataset.layout;
+          localStorage.setItem('omniwatch_layout', state.layout);
+          scheduleRender();
+        };
+      });
+
+      var connBadge = document.getElementById('connBadge');
+      if (connBadge) connBadge.onclick = function() { openSettings(); };
+
+      var btnSettings = document.getElementById('btnSettings');
+      if (btnSettings) btnSettings.onclick = function() { openSettings(); };
+    }
+
+    // ── GRID ──────────────────────────────────────────────────────────
+    function updateGrid(allAgents) {
+      var grid = document.getElementById('feedGrid');
+      if (!grid) return;
+
+      // Update grid layout class
+      grid.className = 'feed-grid layout-' + state.layout;
+
+      // Filter by search
+      var query = state.searchQuery.toLowerCase().trim();
+      var sortedAgents = allAgents
+        .filter(function(a) {
+          if (!query) return true;
+          var name = (a.teacherName || '').toLowerCase();
+          var room = String(a.roomNumber || '');
+          var app = (a.activeApp || '').toLowerCase();
+          var win = (a.activeWindow || '').toLowerCase();
+          return name.indexOf(query) !== -1
+            || room.indexOf(query) !== -1
+            || app.indexOf(query) !== -1
+            || win.indexOf(query) !== -1;
+        })
+        .sort(function(a, b) { return (a.roomNumber || 0) - (b.roomNumber || 0); });
+
+      // Track which tiles should exist
+      var activeIds = new Set(sortedAgents.map(function(a) { return a.agentId; }));
+
+      // Remove tiles that shouldn't exist
+      tileElements.forEach(function(tileEl, id) {
+        if (!activeIds.has(id)) {
+          if (tileEl.parentNode) tileEl.parentNode.removeChild(tileEl);
+          tileElements.delete(id);
+          tileImages.delete(id);
+          lastScreenshots.delete(id);
+        }
+      });
+
+      // Create or update tiles
+      sortedAgents.forEach(function(agent) {
+        var id = agent.agentId;
+        var tile = tileElements.get(id);
+
+        if (!tile) {
+          // Create new tile
+          tile = createTile(agent);
+          tileElements.set(id, tile);
+        } else {
+          // Update existing tile
+          updateTile(tile, agent);
+        }
+
+        // Ensure tile is in the grid
+        if (!tile.parentNode || tile.parentNode !== grid) {
+          grid.appendChild(tile);
+        }
+      });
+
+      // Reorder tiles if needed
+      var children = Array.from(grid.children);
+      var needsReorder = false;
+      for (var i = 0; i < sortedAgents.length; i++) {
+        if (children[i] !== tileElements.get(sortedAgents[i].agentId)) {
+          needsReorder = true;
+          break;
+        }
+      }
+      if (needsReorder) {
+        sortedAgents.forEach(function(agent) {
+          var t = tileElements.get(agent.agentId);
+          if (t) grid.appendChild(t);
+        });
+      }
+    }
+
+    function createTile(agent) {
+      var tile = document.createElement('div');
+      tile.className = 'feed-tile';
+      tile.dataset.agentId = agent.agentId;
+
+      tile.addEventListener('click', function() {
+        state.selectedAgent = agent.agentId;
+        openExpandedView();
+      });
+
+      // Screen area
+      var screen = document.createElement('div');
+      screen.className = 'tile-screen';
+
+      // Persistent image element
+      var img = document.createElement('img');
+      img.alt = 'Screen feed';
+      img.style.display = 'none';
+      img.loading = 'lazy';
+      tileImages.set(agent.agentId, img);
+      screen.appendChild(img);
+
+      // No-feed placeholder
+      var noFeed = document.createElement('div');
+      noFeed.className = 'no-feed';
+      noFeed.textContent = getInitials(agent.teacherName);
+      screen.appendChild(noFeed);
+
+      // Live indicator
+      var live = document.createElement('div');
+      live.className = 'tile-live';
+      live.innerHTML = '<span class="live-dot"></span><span class="live-text">LIVE</span>';
+      screen.appendChild(live);
+
+      // Idle badge
+      var idleBadge = document.createElement('div');
+      idleBadge.className = 'tile-idle-badge';
+      idleBadge.textContent = 'IDLE';
+      screen.appendChild(idleBadge);
+
+      // Offline badge
+      var offlineBadge = document.createElement('div');
+      offlineBadge.className = 'tile-offline-badge';
+      offlineBadge.textContent = 'OFFLINE';
+      screen.appendChild(offlineBadge);
+
+      // Active window bar
+      var winBar = document.createElement('div');
+      winBar.className = 'tile-window-bar';
+      screen.appendChild(winBar);
+
+      tile.appendChild(screen);
+
+      // Info bar
+      var info = document.createElement('div');
+      info.className = 'tile-info';
+      info.innerHTML = '<span class="tile-name"></span><span class="tile-room"></span>';
+      tile.appendChild(info);
+
+      updateTile(tile, agent);
+      return tile;
+    }
+
+    function updateTile(tile, agent) {
+      var isActive = agent.status === 'active';
+      var isIdle = agent.isIdle && isActive;
+      var isDisconnected = agent.status === 'disconnected' || agent.status === 'stale';
+
+      // Update tile status class
+      tile.className = 'feed-tile'
+        + (isActive && !isIdle ? ' status-active' : '')
+        + (isIdle ? ' status-idle' : '')
+        + (isDisconnected ? ' status-disconnected' : '')
+        + (state.selectedAgent === agent.agentId ? ' selected' : '');
+
+      // Update screenshot (only if changed — prevents flicker!)
+      var img = tileImages.get(agent.agentId);
+      var noFeed = tile.querySelector('.no-feed');
+      if (img) {
+        if (agent.screenshot) {
+          var prevScreenshot = lastScreenshots.get(agent.agentId);
+          if (prevScreenshot !== agent.screenshot) {
+            img.src = 'data:image/jpeg;base64,' + agent.screenshot;
+            lastScreenshots.set(agent.agentId, agent.screenshot);
+          }
+          img.style.display = 'block';
+          if (noFeed) noFeed.style.display = 'none';
+        } else {
+          img.style.display = 'none';
+          if (noFeed) {
+            noFeed.style.display = '';
+            noFeed.textContent = getInitials(agent.teacherName);
+          }
+        }
+      }
+
+      // Update LIVE indicator
+      var live = tile.querySelector('.tile-live');
+      if (live) live.style.display = isActive ? 'flex' : 'none';
+
+      // Update IDLE badge
+      var idleBadge = tile.querySelector('.tile-idle-badge');
+      if (idleBadge) {
+        idleBadge.style.display = isIdle ? 'block' : 'none';
+        if (isIdle) idleBadge.textContent = 'IDLE ' + fmtDuration(agent.idleSeconds);
+      }
+
+      // Update OFFLINE badge
+      var offlineBadge = tile.querySelector('.tile-offline-badge');
+      if (offlineBadge) offlineBadge.style.display = isDisconnected && !agent.screenshot ? 'block' : 'none';
+
+      // Update active window bar
+      var winBar = tile.querySelector('.tile-window-bar');
+      if (winBar) {
+        if (agent.activeWindow && isActive) {
+          winBar.style.display = 'block';
+          winBar.textContent = truncStr(agent.activeWindow, 40);
+        } else {
+          winBar.style.display = 'none';
+        }
+      }
+
+      // Update info bar
+      var tileName = tile.querySelector('.tile-name');
+      var tileRoom = tile.querySelector('.tile-room');
+      if (tileName) tileName.textContent = truncStr(agent.teacherName, 16);
+      if (tileRoom) tileRoom.textContent = agent.roomNumber ? 'R' + agent.roomNumber : '';
+
+      // Update title for tooltip
+      tile.title = (agent.teacherName || 'Unknown') + ' — Room ' + (agent.roomNumber || '?')
+        + (isIdle ? ' [IDLE: ' + fmtDuration(agent.idleSeconds) + ']' : '')
+        + (isDisconnected ? ' [OFFLINE]' : '');
+    }
+
+    // ── STATUS BAR ───────────────────────────────────────────────────
+    function updateStatusBar(active, total) {
+      var el = document.getElementById('statusBar');
+      if (!el) return;
+
+      var pct = total > 0 ? Math.round((active / total) * 100) : 0;
+      el.innerHTML = '<div class="status-left">'
+        + '<span class="status-dot">' + (state.connected ? 'CONNECTED' : 'OFFLINE') + (state.latency > 0 ? ' · ' + state.latency + 'ms' : '') + '</span>'
+        + '<span>' + pct + '% ONLINE</span>'
+        + '<span>TPS: ' + state.tps + '</span>'
+        + '</div>'
+        + '<div class="status-right">'
+        + '<span>TEACHERS: <span class="active-count">' + active + '/' + total + '</span></span>'
+        + '<span id="clockDisplay">' + fmtTime(new Date()) + '</span>'
+        + '</div>';
+    }
+
+    // ── EXPANDED VIEW ────────────────────────────────────────────────
+    function openExpandedView() {
+      var overlay = document.getElementById('modalOverlay');
+      if (!overlay) return;
+      overlay.classList.remove('hidden');
+      updateExpandedView();
+    }
+
+    function updateExpandedView() {
+      var overlay = document.getElementById('modalOverlay');
+      if (!overlay || overlay.classList.contains('hidden')) return;
+
+      var agent = state.agents.get(state.selectedAgent);
+      if (!agent) {
+        closeModal();
+        return;
+      }
+
+      var isActive = agent.status === 'active';
+      var isIdle = agent.isIdle && isActive;
+      var idleClass = isIdle ? 'amber' : isActive ? 'emerald' : 'rose';
+      var idleLabel = isIdle ? 'IDLE — ' + fmtDuration(agent.idleSeconds) : isActive ? 'Active' : 'Offline';
+      var connClass = isActive ? 'connected' : 'disconnected';
+      var connLabel = isActive ? 'LIVE' : 'OFFLINE';
+
+      var cpuColor = agent.cpuUsage > 80 ? 'var(--rose)' : 'var(--accent-primary)';
+      var memColor = agent.memoryUsage > 80 ? 'var(--rose)' : 'var(--cyan)';
+
+      overlay.innerHTML = '<div class="modal-panel" onclick="event.stopPropagation()">'
+        // Header
+        + '<div class="modal-header">'
+        + '<div>'
+        + '<h2>' + icon('monitor', 18) + ' Room ' + (agent.roomNumber || '?') + ' — ' + escHtml(agent.teacherName) + '</h2>'
+        + '<div class="modal-sub">Agent: ' + agent.agentId + ' · Updated: ' + (agent.lastUpdate ? fmtDuration((Date.now() - agent.lastUpdate) / 1000) + ' ago' : 'never') + '</div>'
+        + '</div>'
+        + '<div class="modal-header-right">'
+        + '<span class="conn-badge ' + connClass + '"><span class="cb-dot"></span>' + connLabel + '</span>'
+        + '<button class="modal-close-btn" id="modalCloseBtn">' + icon('x', 16) + '</button>'
+        + '</div>'
+        + '</div>'
+
+        // Content
+        + '<div class="expanded-layout">'
+        // Left: Screen + Actions
+        + '<div>'
+        + '<div class="ev-screen-container" id="evScreen">'
+        + (agent.screenshot
+          ? '<img id="evScreenImg" src="data:image/jpeg;base64,' + agent.screenshot + '" alt="Live screen" />'
+          : '<div class="no-feed-large">NO FEED</div>')
+        + '</div>'
+        + '<div class="ev-actions">'
+        + '<button class="sidebar-btn danger" id="evCmdLock">' + icon('lock', 12) + ' Lock Screen</button>'
+        + '<button class="sidebar-btn warn" id="evCmdAlert">' + icon('bell', 12) + ' Send Alert</button>'
+        + '<button class="sidebar-btn" id="evCmdCapture">' + icon('camera', 12) + ' Capture Now</button>'
+        + '</div>'
+        + '</div>'
+
+        // Right: Info cards
+        + '<div class="ev-sidebar">'
+        + '<div class="ev-info-card">'
+        + '<div class="ev-label">' + icon('keyboard', 12) + ' Keyboard Status</div>'
+        + '<div class="ev-value ' + idleClass + '">' + idleLabel + '</div>'
+        + '</div>'
+
+        + '<div class="ev-info-card">'
+        + '<div class="ev-label">' + icon('eye', 12) + ' Active Window</div>'
+        + '<div class="ev-value" style="font-size:11px;word-break:break-all">' + escHtml(agent.activeWindow || 'Unknown') + '</div>'
+        + '</div>'
+
+        + '<div class="ev-info-card">'
+        + '<div class="ev-label">' + icon('cpu', 12) + ' System Resources</div>'
+        + '<div class="ev-value" style="font-size:11px">CPU: ' + (agent.cpuUsage || 0) + '% · RAM: ' + (agent.memoryUsage || 0) + '%</div>'
+        + '<div style="margin-top:6px">'
+        + '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-muted);margin-bottom:2px"><span>CPU</span><span>' + (agent.cpuUsage || 0) + '%</span></div>'
+        + '<div class="progress-bar"><div class="progress-fill" style="width:' + (agent.cpuUsage || 0) + '%;background:' + cpuColor + '"></div></div>'
+        + '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-muted);margin:4px 0 2px"><span>Memory</span><span>' + (agent.memoryUsage || 0) + '%</span></div>'
+        + '<div class="progress-bar"><div class="progress-fill" style="width:' + (agent.memoryUsage || 0) + '%;background:' + memColor + '"></div></div>'
+        + '</div>'
+        + '</div>'
+
+        + '<div class="ev-info-card">'
+        + '<div class="ev-label">' + icon('wifi', 12) + ' Connection</div>'
+        + '<div class="ev-value ' + (isActive ? 'emerald' : 'rose') + '">' + (isActive ? 'Connected' : 'Disconnected') + '</div>'
+        + '</div>'
+
+        + '<div class="ev-info-card">'
+        + '<div class="ev-label">' + icon('zap', 12) + ' Application</div>'
+        + '<div class="ev-value" style="font-size:11px">' + escHtml(agent.activeApp || 'N/A') + '</div>'
+        + '</div>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+
+      // Event listeners for modal
+      var closeBtn = document.getElementById('modalCloseBtn');
+      if (closeBtn) closeBtn.onclick = closeModal;
+
+      var cmdLock = document.getElementById('evCmdLock');
+      if (cmdLock) cmdLock.onclick = function() { sendCmd(agent.agentId, 'lock_screen'); };
+
+      var cmdAlert = document.getElementById('evCmdAlert');
+      if (cmdAlert) cmdAlert.onclick = function() {
+        var msg = prompt('Enter alert message to send to teacher:');
+        if (msg) sendCmd(agent.agentId, 'show_alert', { message: msg });
+      };
+
+      var cmdCapture = document.getElementById('evCmdCapture');
+      if (cmdCapture) cmdCapture.onclick = function() { sendCmd(agent.agentId, 'request_screenshot'); };
+    }
+
+    function closeModal() {
+      state.selectedAgent = null;
+      state.showSettings = false;
+      var overlay = document.getElementById('modalOverlay');
+      if (overlay) overlay.classList.add('hidden');
+    }
+
+    // ── SETTINGS ─────────────────────────────────────────────────────
+    function openSettings() {
+      state.showSettings = true;
+      var overlay = document.getElementById('modalOverlay');
+      if (!overlay) return;
+      overlay.classList.remove('hidden');
+
+      var connClass = state.connected ? 'connected' : state.connecting ? 'connecting' : 'disconnected';
+      var connLabel = state.connected ? 'Connected to server' : state.connecting ? 'Connecting...' : 'Disconnected';
+
+      overlay.innerHTML = '<div class="modal-panel settings-panel" onclick="event.stopPropagation()">'
+        + '<div class="modal-header">'
+        + '<div><h2>' + icon('settings', 18) + ' Connection Settings</h2>'
+        + '<div class="modal-sub">Configure the relay server connection</div></div>'
+        + '<button class="modal-close-btn" id="settingsCloseBtn">' + icon('x', 16) + '</button>'
+        + '</div>'
+
+        + '<label>WebSocket Server URL</label>'
+        + '<input type="text" id="setServerUrl" value="' + escHtml(CONFIG.serverUrl) + '" placeholder="ws://192.168.1.100:9600" />'
+
+        + '<label>Dashboard Token</label>'
+        + '<input type="text" id="setDashToken" value="' + escHtml(CONFIG.dashToken) + '" placeholder="OMNIWATCH-DASH-2026" />'
+
+        + '<label>Idle Threshold (seconds)</label>'
+        + '<input type="number" id="setIdleThreshold" value="' + CONFIG.idleThreshold + '" min="5" max="600" />'
+
+        + '<div class="settings-actions">'
+        + '<button class="btn-primary" id="settingsSaveBtn">Save & Reconnect</button>'
+        + '<button class="btn-secondary" id="settingsCancelBtn">Cancel</button>'
+        + '</div>'
+
+        + '<div style="margin-top:16px;padding:10px;background:var(--bg-tertiary);border-radius:var(--radius-sm);border:1px solid var(--border-subtle)">'
+        + '<div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;font-weight:700;margin-bottom:6px">Connection Status</div>'
+        + '<span class="conn-badge ' + connClass + '"><span class="cb-dot"></span>' + connLabel + '</span>'
+        + '</div>'
+        + '</div>';
+
+      document.getElementById('settingsCloseBtn').onclick = closeModal;
+      document.getElementById('settingsCancelBtn').onclick = closeModal;
+      document.getElementById('settingsSaveBtn').onclick = function() {
+        var url = document.getElementById('setServerUrl').value.trim();
+        var token = document.getElementById('setDashToken').value.trim();
+        var idle = parseInt(document.getElementById('setIdleThreshold').value) || 30;
+
+        if (url) {
+          CONFIG.serverUrl = url;
+          localStorage.setItem('omniwatch_server', url);
+        }
+        if (token) {
+          CONFIG.dashToken = token;
+          localStorage.setItem('omniwatch_token', token);
+        }
+        CONFIG.idleThreshold = idle;
+        localStorage.setItem('omniwatch_idle', String(idle));
+
+        closeModal();
+
+        if (state.ws) { state.ws.close(); state.ws = null; }
+        state.reconnectAttempts = 0;
+        connectWS();
+      };
+    }
+
+    // ── EXPORT LOGS ──────────────────────────────────────────────────
+    function exportLogs() {
+      var lines = state.alerts.map(function(a) {
+        return new Date(a.timestamp).toISOString() + ' | ' + a.type + ' | ' + (a.agentId || '') + ' | ' + (a.teacherName || '') + ' | ' + (a.message || 'idle:' + a.idleSeconds + 's');
+      });
+      var blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'omniwatch-log-' + new Date().toISOString().slice(0, 10) + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // KEYBOARD SHORTCUTS
+    // ═══════════════════════════════════════════════════════════════════
+    document.addEventListener('keydown', function(e) {
+      if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+
+      if (e.key === 'Escape') {
+        closeModal();
+        return;
+      }
+
+      // Layout shortcuts
+      var layoutMap = { '0': 'auto', '1': '1', '2': '2', '4': '4', '6': '6', '8': '10' };
+      if (layoutMap[e.key] && !e.ctrlKey && !e.metaKey) {
+        state.layout = layoutMap[e.key];
+        localStorage.setItem('omniwatch_layout', state.layout);
+        scheduleRender();
+        return;
+      }
+
+      // F key for fullscreen
+      if (e.key === 'f' || e.key === 'F') {
+        state.fullscreen = !state.fullscreen;
+        scheduleRender();
+        return;
+      }
+
+      // / key to focus search
+      if (e.key === '/') {
+        e.preventDefault();
+        var searchEl = document.getElementById('searchInput');
+        if (searchEl) searchEl.focus();
+        return;
+      }
+    });
+
+    // ═══════════════════════════════════════════════════════════════════
+    // CLOCK UPDATE (lightweight, no full re-render)
+    // ═══════════════════════════════════════════════════════════════════
+    setInterval(function() {
+      var clock = document.getElementById('clockDisplay');
+      if (clock) clock.textContent = fmtTime(new Date());
+    }, 1000);
+
+    // ═══════════════════════════════════════════════════════════════════
+    // DEMO DATA (when no server connected)
+    // ═══════════════════════════════════════════════════════════════════
+    function generateDemoData() {
+      var names = [
+        'Elena K.', 'Amara D.', 'Mike R.', 'Henry T.', 'Nancy W.',
+        'Marcus J.', 'Robert L.', 'David P.', 'Mika S.', 'Linda C.',
+        'Oscar B.', 'Jasper H.', 'Sarah M.', 'Sophie A.', 'Paulina F.',
+        'Isabella G.', 'Chen W.', 'James O.', 'Fatima Z.', 'Ahmed K.',
+        'Maria L.', 'John D.', 'Priya S.', 'Hans M.', 'Yuki T.',
+        'Carmen R.', 'Boris N.', 'Aisha H.', 'Leo V.', 'Nina P.',
+        'Rafael C.', 'Eva M.', 'Tariq A.', 'Olga S.', 'Felix B.',
+        'Diana W.', 'Ravi K.', 'Ingrid L.', 'Pablo G.', 'Mei X.',
+        'Stefan H.', 'Layla J.', 'Viktor D.', 'Rosa T.', 'Kenzo Y.',
+        'Clara F.', 'Omar R.', 'Helga N.', 'Dario M.', 'Suki L.'
+      ];
+
+      var apps = [
+        'Zoom - Class Session', 'Google Chrome', 'Microsoft Word',
+        'PowerPoint - Lesson 5', 'WhatsApp Desktop', 'Microsoft Teams',
+        'Google Meet', 'Lesson Planner Pro', 'Adobe Reader - Textbook',
+        'YouTube - Educational Video'
+      ];
+
+      for (var i = 0; i < CONFIG.totalRooms; i++) {
+        var roomNum = CONFIG.roomStart + i;
+        var agentId = 'ROOM-' + roomNum;
+        var name = names[i] || 'Teacher ' + (i + 1);
+        var isActive = Math.random() > 0.2;
+        var isIdle = isActive && Math.random() > 0.8;
+        var idleSec = isIdle ? Math.floor(Math.random() * 300) + 30 : Math.floor(Math.random() * 20);
+
+        state.agents.set(agentId, {
+          agentId: agentId,
+          teacherName: name,
+          roomNumber: roomNum,
+          timestamp: Date.now(),
+          screenshot: null,
+          idleSeconds: idleSec,
+          activeWindow: isActive ? apps[Math.floor(Math.random() * apps.length)] : '',
+          activeApp: isActive ? 'app.exe' : '',
+          keyboardActive: isActive && !isIdle,
+          mouseActive: isActive && !isIdle,
+          cpuUsage: Math.floor(Math.random() * 55) + 5,
+          memoryUsage: Math.floor(Math.random() * 35) + 30,
+          status: isActive ? 'active' : 'disconnected',
+          isIdle: isIdle,
+          lastUpdate: Date.now(),
+        });
+      }
+
+      // Generate some idle alerts
+      state.agents.forEach(function(agent) {
+        if (agent.isIdle) {
+          addAlert({
+            type: 'idle',
+            agentId: agent.agentId,
+            teacherName: agent.teacherName,
+            roomNumber: agent.roomNumber,
+            idleSeconds: agent.idleSeconds,
+            timestamp: Date.now() - Math.floor(Math.random() * 120000),
+          });
+        }
+      });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // INITIALIZATION
+    // ═══════════════════════════════════════════════════════════════════
+    function init() {
+      state.sessionId = genSessionId();
+      generateDemoData();
+      buildDOM();
+      doRender();
+
+      // Try to connect to the relay server
+      setTimeout(connectWS, 300);
+
+      console.log(
+        '%c╔════════════════════════════════════════════════════╗\n' +
+        '║         OMNIWATCH V5 — Dashboard Loaded            ║\n' +
+        '║                                                    ║\n' +
+        '║  Shortcuts:                                        ║\n' +
+        '║    0-8  Switch grid layout                         ║\n' +
+        '║    F    Toggle fullscreen                          ║\n' +
+        '║    /    Focus search                               ║\n' +
+        '║    ESC  Close expanded view                        ║\n' +
+        '╚════════════════════════════════════════════════════╝',
+        'color:#6366f1;font-weight:bold;font-size:11px'
+      );
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+  })();
+  </script>
+</body>
+</html>
