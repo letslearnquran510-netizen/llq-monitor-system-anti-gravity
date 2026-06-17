@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: omniwatch-server
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 9600
+      - key: NODE_ENV
+        value: production
